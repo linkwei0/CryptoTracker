@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol DataStoreProtocol: AnyObject {
+    var userInfo: UserInfo? { get set }
+}

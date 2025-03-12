@@ -6,3 +6,17 @@
 //
 
 import Foundation
+
+final class CryptoDetailsInteractor {
+    typealias Dependencies = HasDataStore
+    
+    private let dependencies: Dependencies
+    
+    init(dependencies: Dependencies) {
+        self.dependencies = dependencies
+    }
+    
+    func signOut() {
+        dependencies.dataService.userInfo = nil
+    }
+}

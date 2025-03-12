@@ -6,3 +6,13 @@
 //
 
 import Foundation
+
+protocol ViewStateHandleable {
+    func handleableResult<T>(_ entities: [T]) -> ViewState<T>
+}
+
+extension ViewStateHandleable {
+    func handleableResult<T>(_ entities: [T]) -> ViewState<T> {
+        return .populated(entities)
+    }
+}

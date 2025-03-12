@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+extension Double {
+    func toRounadableString() -> String {
+        return String(format: "%.4f", self).replacingOccurrences(of: ",", with: ".")
+    }
+}

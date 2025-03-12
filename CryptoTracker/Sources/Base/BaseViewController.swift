@@ -6,10 +6,15 @@
 //
 
 import UIKit
+import SnapKit
 
-class ViewController: UIViewController {
+class BaseViewController: UIViewController, NavigationBarHiding {
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
+        setup()
+    }
+    
+    private func setup() {
+        view.backgroundColor = .mainBackground
     }
 }

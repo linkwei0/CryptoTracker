@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+struct MarketCapDTO: Decodable {
+    let capitalization: Double?
+    
+    enum CodingKeys: String, CodingKey {
+        case capitalization = "realized_marketcap_usd"
+    }
+}

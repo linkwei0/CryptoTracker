@@ -9,13 +9,12 @@ import Foundation
 
 protocol CryptoListViewModelDelegate: AnyObject {
     func viewModelDidRequestToShowDetails(_ viewModel: CryptoListViewModel, for crypto: Crypto)
+    func viewModelDidRequestToShowAuth(_ viewModel: CryptoListViewModel)
 }
 
 class CryptoListViewModel: TableViewModel, ViewStateHandleable {
     // MARK: - Properties
     weak var delegate: CryptoListViewModelDelegate?
-    
-    var onNeedsToUpdate: (() -> Void)?
     
     var sectionViewModels: [TableSectionViewModel] {
         let section = TableSectionViewModel()
@@ -23,7 +22,10 @@ class CryptoListViewModel: TableViewModel, ViewStateHandleable {
         return [section]
     }
     
+    let viewState: Bindable<ViewState<TableCellViewModel>> = .init(.loading)
+    
     private var itemViewModels: [TableCellViewModel] = []
+    private var cryptos: [Crypto] = []
     
     private let interactor: CryptoListInteractor
     
@@ -37,16 +39,41 @@ class CryptoListViewModel: TableViewModel, ViewStateHandleable {
         loadData()
     }
     
+    func didTapFilter(option: FilterType) {
+        switch option {
+        case .ascending:
+            cryptos.sort { $0.price < $1.price }
+        case .descending:
+            cryptos.sort { $0.price > $1.price }
+        }
+        
+        itemViewModels = cryptos.map { crypto in
+            let itemViewModel = CryptoCellViewModel(crypto: crypto)
+            itemViewModel.delegate = self
+            return itemViewModel
+        }
+        
+        viewState.value = handleableResult(itemViewModels)
+    }
+    
+    func signOut() {
+        interactor.signOut()
+        delegate?.viewModelDidRequestToShowAuth(self)
+    }
+    
     // MARK: - Private methods
     private func loadData() {
         interactor.loadData(symbols: Constants.symbols) { [weak self] cryptos in
-            self?.itemViewModels = cryptos.map { crypto in
+            guard let self else { return }
+            self.cryptos = cryptos
+            
+            self.itemViewModels = cryptos.map { crypto in
                 let itemViewModel = CryptoCellViewModel(crypto: crypto)
                 itemViewModel.delegate = self
                 return itemViewModel
             }
             
-            self?.onNeedsToUpdate?()
+            self.viewState.value = self.handleableResult(itemViewModels)
         }
     }
 }
@@ -63,3 +90,11 @@ private extension Constants {
     static let symbols = ["btc", "eth", "tron", "luna", "polkadot",
                           "dogecoin", "tether", "stellar", "cardano", "xrp"]
 }
+
+// MARK: - Enums
+enum FilterType {
+    case ascending
+    case descending
+}
+
+typealias CryptoViewState = ViewState<TableCellViewModel>

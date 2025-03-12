@@ -7,18 +7,21 @@
 
 import UIKit
 
-class CryptoListViewController: BaseViewController, NavigationBarHiding {
+class CryptoListViewController: BaseViewController {
     // MARK: - UI Elements
-    private let headerView = UIView()
-    private let titleLabel = UILabel()
-    private let settingsButton = SettingsButton()
-    private let affiliateLabel = UILabel()
-    private let learnMoreButton = UIButton()
-    private let backgroundImage = UIImageView()
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.hidesWhenStopped = true
+        indicator.color = .accentPink
+        return indicator
+    }()
+    
+    private let headerView = HeaderView()
     private let containerView = UIView()
-    private let trendingLabel = UILabel()
+    private let trendingLabel = Label(textStyle: .callout)
     private let filterButton = UIButton()
     private let tableView = UITableView(frame: .zero, style: .plain)
+    private weak var popupMenu: PopupMenuView?
     
     private let viewModel: CryptoListViewModel
     private let dataSource = TableViewDataSource()
@@ -41,6 +44,52 @@ class CryptoListViewController: BaseViewController, NavigationBarHiding {
         viewModel.viewIsReady()
     }
     
+    // MARK: - Actions
+    @objc private func didTapSettings() {
+        if let existingMenu = popupMenu {
+            UIView.animate(withDuration: 0.2, animations: {
+                existingMenu.alpha = 0
+            }) { _ in
+                existingMenu.removeFromSuperview()
+                self.popupMenu = nil
+            }
+        } else {
+            let menu = PopupMenuView()
+            view.addSubview(menu)
+            menu.snp.makeConstraints { make in
+                make.top.equalTo(headerView.settingsButton.snp.bottom).offset(8)
+                make.trailing.equalTo(headerView.settingsButton)
+            }
+            
+            menu.alpha = 0
+            UIView.animate(withDuration: 0.3) {
+                menu.alpha = 1
+            }
+            popupMenu = menu
+            popupMenu?.delegate = self
+        }
+    }
+    
+    @objc private func didTapFilter() {
+        let ascendingAction = UIAction(title: "По возрастанию", image: nil) { [weak self] _ in
+            self?.viewModel.didTapFilter(option: .ascending)
+        }
+        
+        let descendingAction = UIAction(title: "По убыванию", image: nil) { [weak self] _ in
+            self?.viewModel.didTapFilter(option: .descending)
+        }
+        
+        let menu = UIMenu(title: "Сортировка", children: [ascendingAction, descendingAction])
+        
+        filterButton.menu = menu
+        filterButton.showsMenuAsPrimaryAction = true
+    }
+    
+    
+    @objc private func didTapLearnMore() {
+        print("Did select LearnMore button")
+    }
+    
     // MARK: - Setup
     private func setup() {
         setupHeaderView()
@@ -51,68 +100,19 @@ class CryptoListViewController: BaseViewController, NavigationBarHiding {
     
     private func setupHeaderView() {
         view.addSubview(headerView)
-        headerView.backgroundColor = UIColor.accentPink
-        headerView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMinXMaxYCorner]
         
         headerView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.height.equalTo(300)
         }
         
-        headerView.addSubview(titleLabel)
-        titleLabel.text = "Home"
-        titleLabel.font = UIFont(name: "Poppins-Bold", size: 32)
-        titleLabel.textColor = .baseWhite
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(60)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        // У вас плохая картинка в фигме
-        headerView.addSubview(settingsButton)
-        settingsButton.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(60)
-            make.trailing.equalToSuperview().inset(20)
-            make.width.height.equalTo(48)
-        }
-        
-        headerView.addSubview(affiliateLabel)
-        affiliateLabel.text = "Affiliate program"
-        affiliateLabel.font = UIFont(name: "Poppins-Regular", size: 20)
-        affiliateLabel.textColor = .white
-        affiliateLabel.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom).offset(38)
-            make.leading.equalToSuperview().inset(20)
-        }
-        
-        headerView.addSubview(learnMoreButton)
-        learnMoreButton.backgroundColor = .baseWhite
-        learnMoreButton.layer.cornerRadius = 35 / 2
-        learnMoreButton.layer.masksToBounds = false
-        learnMoreButton.setTitle("Learn more", for: .normal)
-        learnMoreButton.setTitleColor(.baseBlack, for: .normal)
-        learnMoreButton.titleLabel?.font = UIFont(name: "Poppins-Bold", size: 14)
-        learnMoreButton.snp.makeConstraints { make in
-            make.top.equalTo(affiliateLabel.snp.bottom).offset(12)
-            make.leading.equalToSuperview().inset(20)
-            make.width.equalTo(127)
-            make.height.equalTo(35)
-        }
-        
-        headerView.addSubview(backgroundImage)
-        backgroundImage.image = UIImage.backgroundIcon
-        backgroundImage.contentMode = .scaleAspectFit
-        backgroundImage.clipsToBounds = true
-        backgroundImage.snp.makeConstraints { make in
-            make.trailing.equalToSuperview().inset(-30)
-            make.bottom.equalToSuperview().inset(-52)
-            make.width.height.equalTo(242)
-        }
+        headerView.setSettingsAction(target: self, action: #selector(didTapSettings))
+        headerView.setLearnMoreAction(target: self, action: #selector(didTapLearnMore))
     }
     
     private func setupContainerView() {
         view.addSubview(containerView)
-        containerView.backgroundColor = .baseWhite
+        containerView.backgroundColor = .mainBackground
         containerView.layer.cornerRadius = 30
         containerView.layer.masksToBounds = true
         containerView.addShadow()
@@ -120,21 +120,24 @@ class CryptoListViewController: BaseViewController, NavigationBarHiding {
             make.top.equalTo(headerView.snp.bottom).offset(-30)
             make.leading.trailing.bottom.equalToSuperview()
         }
+        
+        containerView.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-50)
+        }
     }
     
     private func setupTableHeaderView() {
         containerView.addSubview(trendingLabel)
         trendingLabel.text = "Trending"
-        trendingLabel.font = UIFont(name: "Poppins-Regular", size: 20)
-        trendingLabel.textColor = .baseBlack
         trendingLabel.snp.makeConstraints { make in
             make.top.leading.equalToSuperview().inset(20)
         }
         
         containerView.addSubview(filterButton)
-        let image = UIImage.filterBtnIcon.withRenderingMode(.alwaysTemplate)
-        filterButton.setImage(image, for: .normal)
-        filterButton.tintColor = .darkGray
+        filterButton.setImage(.filterBtnIcon, for: .normal)
+        filterButton.addTarget(self, action: #selector(didTapFilter), for: .touchUpInside)
         filterButton.snp.makeConstraints { make in
             make.centerY.equalTo(trendingLabel)
             make.trailing.equalToSuperview().inset(20)
@@ -145,6 +148,7 @@ class CryptoListViewController: BaseViewController, NavigationBarHiding {
         containerView.addSubview(tableView)
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
+        tableView.sectionHeaderTopPadding = 0
         tableView.rowHeight = 70
         tableView.register(CryptoCell.self, forCellReuseIdentifier: CryptoCell.reuseIdentifier)
         tableView.snp.makeConstraints { make in
@@ -155,10 +159,32 @@ class CryptoListViewController: BaseViewController, NavigationBarHiding {
         dataSource.setup(tableView: tableView, viewModel: viewModel)
     }
     
+    // MARK: - Private methods
+    private func configureView(withState state: CryptoViewState) {
+        switch state {
+        case .loading:
+            activityIndicator.startAnimating()
+            tableView.isHidden = true
+        case .populated:
+            activityIndicator.stopAnimating()
+            tableView.isHidden = false
+        }
+    }
+    
     // MARK: - Bindable
     private func bindToViewModel() {
-        viewModel.onNeedsToUpdate = { [weak self] in
-            self?.tableView.reloadData()
+        viewModel.viewState.bind { [weak self] state in
+            DispatchQueue.main.async {
+                self?.configureView(withState: state)
+                self?.tableView.reloadData()
+            }
         }
+    }
+}
+
+// MARK: - PopupMenuViewDelegate
+extension CryptoListViewController: PopupMenuViewDelegate {
+    func popupMenuDidTapSignOut(_ popupMenuView: PopupMenuView) {
+        viewModel.signOut()
     }
 }

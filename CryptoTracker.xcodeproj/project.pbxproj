@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ADD0AC372D809F5F00898201 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = ADD0AC362D809F5F00898201 /* SnapKit */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ADD0AC0A2D80905100898201 /* CryptoTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CryptoTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ADD0AC372D809F5F00898201 /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = CryptoTracker;
 			packageProductDependencies = (
+				ADD0AC362D809F5F00898201 /* SnapKit */,
 			);
 			productName = CryptoTracker;
 			productReference = ADD0AC0A2D80905100898201 /* CryptoTracker.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = ADD0AC012D80905000898201;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ADD0AC352D809F5F00898201 /* XCRemoteSwiftPackageReference "SnapKit" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ADD0AC0B2D80905100898201 /* Products */;
 			projectDirPath = "";
@@ -343,6 +352,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ADD0AC352D809F5F00898201 /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ADD0AC362D809F5F00898201 /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADD0AC352D809F5F00898201 /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ADD0AC022D80905000898201 /* Project object */;
 }

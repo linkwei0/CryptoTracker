@@ -15,8 +15,8 @@ class CryptoCellViewModel {
     // MARK: - Properties
     weak var delegate: CryptoCellViewModelDelegate?
     
-    var imageName: String {
-        return "user-icon"
+    var imageName: CryptoType {
+        return crypto.type
     }
     
     var title: String {
@@ -28,11 +28,11 @@ class CryptoCellViewModel {
     }
     
     var price: String {
-        return crypto.price.toRounadableString()
+        return "$" + crypto.price.toRounadableString()
     }
     
     var dynamics: String {
-        return crypto.price24H.toRounadableString()
+        return crypto.price24H.toRounadableString() + "%"
     }
     
     var isIncreased: Bool {

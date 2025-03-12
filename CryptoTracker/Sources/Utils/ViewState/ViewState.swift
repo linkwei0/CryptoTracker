@@ -6,3 +6,17 @@
 //
 
 import Foundation
+
+enum ViewState<Entity> {
+    case loading
+    case populated([Entity])
+    
+    var currentEntities: [Entity] {
+        switch self {
+        case .loading:
+            return []
+        case .populated(let entities):
+            return entities
+        }
+    }
+}

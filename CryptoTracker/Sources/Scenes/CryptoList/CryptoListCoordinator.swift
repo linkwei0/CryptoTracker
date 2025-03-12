@@ -5,20 +5,26 @@
 //  Created by Артём Бацанов on 11.03.2025.
 //
 
-import Foundation
+import UIKit
 
-class CryptoListCoordinator: Coordinator {
+protocol CryptoListCoordinatorDelegate: AnyObject {
+    func coordinatorDidFinish(_ coordinator: CryptoListCoordinator)
+}
+
+final class CryptoListCoordinator: Coordinator {
+    weak var delegate: CryptoListCoordinatorDelegate?
+    
     var childCoordinators: [Coordinator] = []
     var onDidFinish: (() -> Void)?
     
     let navigationController: NavigationController
     let appDependency: AppDependency
-
+    
     required init(navigationController: NavigationController, appDependency: AppDependency) {
         self.navigationController = navigationController
         self.appDependency = appDependency
     }
-        
+    
     func start(animated: Bool) {
         showCryptoListScreen(animated: animated)
     }
@@ -37,6 +43,20 @@ class CryptoListCoordinator: Coordinator {
 extension CryptoListCoordinator: CryptoListViewModelDelegate {
     func viewModelDidRequestToShowDetails(_ viewModel: CryptoListViewModel, for crypto: Crypto) {
         let configuration = CryptoDetailsConfiguration(crypto: crypto)
-        show(CryptoDetailsCoordinator.self, configuration: configuration, animated: true)
+        let coordinator = show(CryptoDetailsCoordinator.self, configuration: configuration, animated: true)
+        coordinator.delegate = self
+    }
+    
+    func viewModelDidRequestToShowAuth(_ viewModel: CryptoListViewModel) {
+        delegate?.coordinatorDidFinish(self)
+        onDidFinish?()
+    }
+}
+
+// MARK: - CryptoDetailsCoordinatorDelegate
+extension CryptoListCoordinator: CryptoDetailsCoordinatorDelegate {
+    func coordinatorDidFinish(_ coordinator: CryptoDetailsCoordinator) {
+        delegate?.coordinatorDidFinish(self)
+        onDidFinish?()
     }
 }

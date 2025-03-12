@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+protocol DomainConvertable {
+    associatedtype Model
+    func asDomain() -> Model
+}

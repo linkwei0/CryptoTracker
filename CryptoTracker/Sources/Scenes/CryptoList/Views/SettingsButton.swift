@@ -8,17 +8,16 @@
 import UIKit
 
 class SettingsButton: UIButton {
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupUI()
+        setup()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func setupUI() {
+    private func setup() {
         backgroundColor = .baseWhite
         layer.cornerRadius = 24
         layer.masksToBounds = false

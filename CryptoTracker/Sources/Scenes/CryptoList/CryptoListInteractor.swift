@@ -7,8 +7,8 @@
 
 import Foundation
 
-class CryptoListInteractor {
-    typealias Dependencies = HasCryptoService
+final class CryptoListInteractor {
+    typealias Dependencies = HasCryptoService & HasDataStore
     
     private let dependencies: Dependencies
     
@@ -30,7 +30,7 @@ class CryptoListInteractor {
                     let crypto = cryptoDTO.asDomain()
                     queue.sync { cryptos.append(crypto) }
                 case .failure(let error):
-                    print("Ошибка загрузки \(symbol): \(error)")
+                    print("Ошибка - \(symbol): \(error)")
                 }
                 dispatchGroup.leave()
             }
@@ -40,5 +40,8 @@ class CryptoListInteractor {
             completion(cryptos)
         }
     }
+    
+    func signOut() {
+        dependencies.dataService.userInfo = nil
+    }
 }
-

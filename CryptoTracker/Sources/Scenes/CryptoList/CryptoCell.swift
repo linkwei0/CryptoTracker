@@ -10,10 +10,10 @@ import UIKit
 class CryptoCell: UITableViewCell, TableCell {
     // MARK: - Properties
     private let mainImageView = UIImageView()
-    private let nameLabel = UILabel()
-    private let shortNameLabel = UILabel()
-    private let priceLabel = UILabel()
-    private let dynamicsLabel = UILabel()
+    private let nameLabel = Label(textStyle: .body)
+    private let shortNameLabel = Label(textStyle: .footnote)
+    private let priceLabel = Label(textStyle: .body)
+    private let dynamicsLabel = Label(textStyle: .footnote)
     private let dynamicsIcon = UIImageView()
     
     // MARK: - Init
@@ -31,12 +31,12 @@ class CryptoCell: UITableViewCell, TableCell {
     func configure(with viewModel: TableCellViewModel) {
         guard let viewModel = viewModel as? CryptoCellViewModel else { return }
         
-        mainImageView.image = UIImage(named: viewModel.imageName)
+        mainImageView.image = viewModel.imageName.image
         nameLabel.text = viewModel.title
         shortNameLabel.text = viewModel.shortName
         priceLabel.text = viewModel.price
         dynamicsLabel.text = viewModel.dynamics
-        dynamicsIcon.image = viewModel.isIncreased ? UIImage(systemName: "arrow.up") : UIImage(systemName: "arrow.down")
+        dynamicsIcon.image = viewModel.isIncreased ? .arrowUp : .arrowDown
     }
     
     // MARK: - Setup
@@ -51,6 +51,7 @@ class CryptoCell: UITableViewCell, TableCell {
     
     private func setupBackground() {
         selectionStyle = .none
+        backgroundColor = .clear
     }
     
     private func setupMainImage() {
@@ -67,18 +68,15 @@ class CryptoCell: UITableViewCell, TableCell {
     
     private func setupNameLabel() {
         contentView.addSubview(nameLabel)
-        nameLabel.font = UIFont(name: "Poppins-Bold", size: 18)
-        nameLabel.textColor = .baseBlack
         nameLabel.snp.makeConstraints { make in
-            make.leading.equalTo(mainImageView.snp.trailing).offset(10)
+            make.leading.equalTo(mainImageView.snp.trailing).offset(14)
             make.top.equalToSuperview().offset(10)
         }
     }
     
     private func setupShortNmaeLabel() {
         contentView.addSubview(shortNameLabel)
-        shortNameLabel.font = UIFont(name: "Poppins-Regular", size: 14)
-        shortNameLabel.textColor = .lightGray
+        shortNameLabel.textColor = .textSecondary
         shortNameLabel.snp.makeConstraints { make in
             make.leading.equalTo(nameLabel)
             make.top.equalTo(nameLabel.snp.bottom).offset(2)
@@ -87,8 +85,6 @@ class CryptoCell: UITableViewCell, TableCell {
     
     private func setupPriceLabel() {
         contentView.addSubview(priceLabel)
-        priceLabel.font = UIFont(name: "Poppins-Regular", size: 18)
-        priceLabel.textColor = .baseBlack
         priceLabel.textAlignment = .right
         priceLabel.snp.makeConstraints { make in
             make.trailing.equalToSuperview().inset(20)
@@ -98,8 +94,7 @@ class CryptoCell: UITableViewCell, TableCell {
     
     private func setupDynamicsLabel() {
         contentView.addSubview(dynamicsLabel)
-        dynamicsLabel.font = UIFont(name: "Poppins-Bold", size: 14)
-        dynamicsLabel.textColor = .lightGray
+        dynamicsLabel.textColor = .textSecondary
         dynamicsLabel.textAlignment = .right
         dynamicsLabel.snp.makeConstraints { make in
             make.trailing.equalTo(priceLabel)
