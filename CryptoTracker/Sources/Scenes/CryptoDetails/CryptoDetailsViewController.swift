@@ -8,7 +8,7 @@
 import UIKit
 
 class CryptoDetailsViewController: BaseViewController {
-    // MARK: - Properties
+    // MARK: - Properties    
     private let backButton = UIButton()
     private let titleLabel = Label(textStyle: .body)
     private let settingsButton = SettingsButton()

@@ -9,6 +9,10 @@ import UIKit
 import SnapKit
 
 class BaseViewController: UIViewController, NavigationBarHiding {
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .darkContent
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()

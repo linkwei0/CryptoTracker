@@ -8,10 +8,6 @@
 import UIKit
 
 class NavigationController: UINavigationController {
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .darkContent
-    }
-    
     private var popObservers: [NavigationPopObserver] = []
     
     init() {

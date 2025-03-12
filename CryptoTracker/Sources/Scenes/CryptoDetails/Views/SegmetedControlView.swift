@@ -33,7 +33,6 @@ final class SegmentedControlView: UIView {
         self.options = options
         super.init(frame: .zero)
         setupUI()
-        selectIndex(0, animated: false) // Устанавливаем первый элемент активным
     }
     
     required init?(coder: NSCoder) {

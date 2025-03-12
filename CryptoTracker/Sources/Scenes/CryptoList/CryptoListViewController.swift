@@ -8,7 +8,11 @@
 import UIKit
 
 class CryptoListViewController: BaseViewController {
-    // MARK: - UI Elements
+    // MARK: - Properties
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
+    
     private let activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .large)
         indicator.hidesWhenStopped = true
