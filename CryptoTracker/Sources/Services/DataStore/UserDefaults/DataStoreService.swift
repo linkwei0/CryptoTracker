@@ -20,8 +20,13 @@ final class DataStoreService: DataStoreProtocol {
             return try? JSONDecoder().decode(UserInfo.self, from: data)
         }
         set {
-            let data = (try? JSONEncoder().encode(newValue)) ?? Data()
-            userDefaults.set(data, forKey: UserDefaultsKeys.userInfo)
+            if let newValue = newValue {
+                if let data = try? JSONEncoder().encode(newValue) {
+                    userDefaults.set(data, forKey: UserDefaultsKeys.userInfo)
+                }
+            } else {
+                userDefaults.removeObject(forKey: UserDefaultsKeys.userInfo)
+            }
         }
     }
 }
