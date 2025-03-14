@@ -40,8 +40,14 @@ class InputFieldView: UIView {
     func configure(with viewModel: AuthViewModel) {
         self.viewModel = viewModel
         
-        textField.text = "1234"
-        viewModel.setText("1234", type: type)
+        textField.text = viewModel.getText(for: type)
+        textField.sendActions(for: .editingChanged)
+    }
+    
+    func clear() {
+        guard !textField.text.isEmptyOrNil else { return }
+        textField.text = ""
+        textField.sendActions(for: .editingChanged)
     }
     
     // MARK: - Actions
@@ -94,6 +100,10 @@ class InputFieldView: UIView {
     }
     
     // MARK: - Private methods
+    @objc private func textFieldDidChange() {
+        viewModel?.setText(textField.text, type: type)
+    }
+    
     private func addDoneButtonTo(textField: UITextField) {
         let toolbar: UIToolbar = UIToolbar(frame: CGRect.init(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 45))
         

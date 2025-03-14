@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AuthViewController: BaseViewController {
+class AuthViewController: BaseViewController, AlertPresentable {
     // MARK: - Properties
     private let scrollView = UIScrollView()
     private let contentView = UIView()
@@ -32,6 +32,7 @@ class AuthViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        bindToViewModel()
         setupKeyboardNotifications()
     }
     
@@ -130,5 +131,16 @@ class AuthViewController: BaseViewController {
     
     deinit {
         NotificationCenter.default.removeObserver(self)
+    }
+    
+    // MARK: - Bindable
+    private func bindToViewModel() {
+        viewModel.onNeedsToShowAlert = { [weak self] alertComponents in
+            self?.presentAlert(alertComponents: alertComponents)
+        }
+        viewModel.onNeedsToClearTextFields = { [weak self] in
+            self?.usernameTextField.clear()
+            self?.passwordTextField.clear()
+        }
     }
 }

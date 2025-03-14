@@ -9,6 +9,11 @@ import UIKit
 
 protocol PopupMenuViewDelegate: AnyObject {
     func popupMenuDidTapSignOut(_ popupMenuView: PopupMenuView)
+    func popupMenuDidTapRefresh(_ popupMenuView: PopupMenuView)
+}
+
+extension PopupMenuViewDelegate {
+    func popupMenuDidTapRefresh(_ popupMenuView: PopupMenuView) {}
 }
 
 class PopupMenuView: UIView {
@@ -32,6 +37,7 @@ class PopupMenuView: UIView {
     
     // MARK: - Actions
     @objc private func refreshTapped() {
+        delegate?.popupMenuDidTapRefresh(self)
         removeFromSuperview()
     }
     

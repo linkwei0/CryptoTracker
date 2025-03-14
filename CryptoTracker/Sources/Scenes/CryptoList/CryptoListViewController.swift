@@ -7,19 +7,13 @@
 
 import UIKit
 
-class CryptoListViewController: BaseViewController {
+class CryptoListViewController: BaseViewController, LoadingDisplayable {
     // MARK: - Properties
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
     
-    private let activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .large)
-        indicator.hidesWhenStopped = true
-        indicator.color = .accentPink
-        return indicator
-    }()
-    
+    let loaderView = UIActivityIndicatorView()
     private let headerView = HeaderView()
     private let containerView = UIView()
     private let trendingLabel = Label(textStyle: .callout)
@@ -125,8 +119,8 @@ class CryptoListViewController: BaseViewController {
             make.leading.trailing.bottom.equalToSuperview()
         }
         
-        containerView.addSubview(activityIndicator)
-        activityIndicator.snp.makeConstraints { make in
+        containerView.addSubview(loaderView)
+        loaderView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview().offset(-50)
         }
@@ -167,10 +161,10 @@ class CryptoListViewController: BaseViewController {
     private func configureView(withState state: CryptoViewState) {
         switch state {
         case .loading:
-            activityIndicator.startAnimating()
+            showLoader()
             tableView.isHidden = true
         case .populated:
-            activityIndicator.stopAnimating()
+            hideLoader()
             tableView.isHidden = false
         }
     }
@@ -190,5 +184,9 @@ class CryptoListViewController: BaseViewController {
 extension CryptoListViewController: PopupMenuViewDelegate {
     func popupMenuDidTapSignOut(_ popupMenuView: PopupMenuView) {
         viewModel.signOut()
+    }
+    
+    func popupMenuDidTapRefresh(_ popupMenuView: PopupMenuView) {
+        viewModel.refresh()
     }
 }

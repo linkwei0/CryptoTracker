@@ -61,6 +61,11 @@ class CryptoListViewModel: TableViewModel, ViewStateHandleable {
         delegate?.viewModelDidRequestToShowAuth(self)
     }
     
+    func refresh() {
+        viewState.value = .loading
+        loadData()
+    }
+    
     // MARK: - Private methods
     private func loadData() {
         interactor.loadData(symbols: Constants.symbols) { [weak self] cryptos in
